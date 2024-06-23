@@ -8,6 +8,9 @@ source "$BASEDIR/launch_env.sh"
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 
+# make MapTargetLatA file
+./mtla.sh
+
 function agnos_init {
   # TODO: move this to agnos
   sudo rm -f /data/etc/NetworkManager/system-connections/*.nmmeta
