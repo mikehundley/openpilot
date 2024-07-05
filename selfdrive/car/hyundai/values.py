@@ -15,6 +15,7 @@ Ecu = car.CarParams.Ecu
 class CarControllerParams:
   ACCEL_MIN = -3.5 # m/s
   ACCEL_MAX = 2.5 # m/s
+  TUCSON_4G_SR="15.0"
 
   def __init__(self, CP):
     self.STEER_DELTA_UP = 3
@@ -339,7 +340,7 @@ class CAR(Platforms):
       HyundaiCarDocs("Hyundai Tucson Hybrid 2022-24", "All", car_parts=CarParts.common([CarHarness.hyundai_n])),
       HyundaiCarDocs("Hyundai Tucson Plug-in Hybrid 2024", "All", car_parts=CarParts.common([CarHarness.hyundai_n])),
     ],
-    CarSpecs(mass=1670, wheelbase=2.76, steerRatio=13.7, tireStiffnessFactor=1.0),
+    CarSpecs(mass=1670, wheelbase=2.76, steerRatio="TUCSON_4G_SR", tireStiffnessFactor=1.0),
   )
   HYUNDAI_SANTA_CRUZ_1ST_GEN = HyundaiCanFDPlatformConfig(
     [HyundaiCarDocs("Hyundai Santa Cruz 2022-24", car_parts=CarParts.common([CarHarness.hyundai_n]))],
