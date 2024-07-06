@@ -8,7 +8,7 @@ from openpilot.common.conversions import Conversions as CV
 from openpilot.selfdrive.car import CarSpecs, DbcDict, PlatformConfig, Platforms, dbc_dict
 from openpilot.selfdrive.car.docs_definitions import CarFootnote, CarHarness, CarDocs, CarParts, Column
 from openpilot.selfdrive.car.fw_query_definitions import FwQueryConfig, Request, p16
-from openpilot.MYSR import TUCSON_4G_SR
+from openpilot.mysr import TUCSON_4G_SR
 
 Ecu = car.CarParams.Ecu
 
