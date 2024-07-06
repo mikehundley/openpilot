@@ -1,11 +1,3 @@
-# Read Tucson 4th gen SR value from /data/openpilot/TUCSON_4G_SR
-def read_steer_ratio(file_path):
-  with open(file_path, 'r') as file:
-    return float(file.read().strip())
-
-TUCSON_4G_SR_FILE_PATH = "/data/openpilot/TUCSON_4G_SR"
-TUCSON_4G_SR = read_steer_ratio(TUCSON_4G_SR_FILE_PATH)
-
 import re
 from dataclasses import dataclass, field
 from enum import Enum, IntFlag
@@ -16,6 +8,7 @@ from openpilot.common.conversions import Conversions as CV
 from openpilot.selfdrive.car import CarSpecs, DbcDict, PlatformConfig, Platforms, dbc_dict
 from openpilot.selfdrive.car.docs_definitions import CarFootnote, CarHarness, CarDocs, CarParts, Column
 from openpilot.selfdrive.car.fw_query_definitions import FwQueryConfig, Request, p16
+from openpilot.MYSR import TUCSON_4G_SR
 
 Ecu = car.CarParams.Ecu
 
