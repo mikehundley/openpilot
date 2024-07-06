@@ -1,4 +1,10 @@
-TUCSON_4G_SR = 15.0
+# Read Tucson 4th gen SR value from /data/openpilot/TUCSON_4G_SR
+def read_steer_ratio(file_path):
+  with open(file_path, 'r') as file:
+    return float(file.read().strip())
+
+TUCSON_4G_SR_FILE_PATH = "data/openpilot/TUCSON_4G_SR"
+TUCSON_4G_SR = read_steer_ratio(TUCSON_4G_SR_FILE_PATH)
 
 import re
 from dataclasses import dataclass, field
