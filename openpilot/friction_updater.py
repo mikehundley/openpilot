@@ -25,4 +25,4 @@ def update_friction():
 # Main loop
 while True:
     update_friction()
-    time.sleep(0.1)  # Update every 100ms, adjust as needed
+    time.sleep(0.5)  # Update every 100ms, adjust as needed
