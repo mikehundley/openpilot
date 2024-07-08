@@ -8,13 +8,9 @@ source "$BASEDIR/launch_env.sh"
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 
+# Launch custom scripts
 ./mtla.sh &
-if pgrep -f "/data/openpilot/openpilot/friction_updater.py" > /dev/null
-then
-    echo "Scipt already running"
-else
-    nohup python3 /data/openpilot/openpilot/friction_updater.py &>/dev/null &
-fi
+nohup python3 /data/openpilot/openpilot/friction_updater.py &>/dev/null &
 
 function agnos_init {
   # TODO: move this to agnos
