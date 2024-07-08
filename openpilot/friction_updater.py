@@ -17,7 +17,7 @@ def update_friction():
     vEgo = sm['carState'].vEgo
 
     # Determine the appropriate friction value
-    if vEgo > 22.4:  # 50 mph in m/s
+    if vEgo > 17.8:  # 45 mph in m/s
         friction = 0
     else:
         friction = 17
