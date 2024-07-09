@@ -13,8 +13,8 @@ while true; do
   else
       echo "friction_updater.py is not running"
   fi
-  
+
   echo "Current Friction = $(cat /data/params/d/TorqueFriction)"
-  
+  echo "--------------------------------"
   sleep 10
 done
