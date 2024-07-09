@@ -14,7 +14,7 @@ sm = messaging.SubMaster(['carState'])
 
 last_friction = None
 last_write_time = 0
-WRITE_INTERVAL = 1.0  # Write at most every 1 seconds
+WRITE_INTERVAL = 2.5  # Write at most every 1 seconds
 
 def update_friction():
     global last_friction, last_write_time
