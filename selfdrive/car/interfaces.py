@@ -29,7 +29,7 @@ GearShifter = car.CarState.GearShifter
 EventName = car.CarEvent.EventName
 
 MAX_CTRL_SPEED = (V_CRUISE_MAX + 4) * CV.KPH_TO_MS
-ACCEL_MAX = 2.0
+ACCEL_MAX = 2.5
 ACCEL_MIN = -3.5
 FRICTION_THRESHOLD = 0.3
 
@@ -367,7 +367,7 @@ class CarInterfaceBase(ABC):
     ret.tireStiffnessFactor = 1.0
     ret.steerControlType = car.CarParams.SteerControlType.torque
     ret.minSteerSpeed = 0.
-    ret.wheelSpeedFactor = 1.0
+    ret.wheelSpeedFactor = 1.4
 
     ret.pcmCruise = True     # openpilot's state is tied to the PCM's cruise state on most cars
     ret.pcmCruiseSpeed = True     # openpilot's state is tied to the PCM's cruise speed
@@ -376,8 +376,8 @@ class CarInterfaceBase(ABC):
     ret.openpilotLongitudinalControl = False
     ret.stopAccel = -2.0
     ret.stoppingDecelRate = 0.8 # brake_travel/s while trying to stop
-    ret.vEgoStopping = 0.5
-    ret.vEgoStarting = 0.5
+    ret.vEgoStopping = 0.25
+    ret.vEgoStarting = 0.75
     ret.stoppingControl = True
     ret.longitudinalTuning.deadzoneBP = [0.]
     ret.longitudinalTuning.deadzoneV = [0.]
