@@ -367,7 +367,7 @@ class CarInterfaceBase(ABC):
     ret.tireStiffnessFactor = 1.0
     ret.steerControlType = car.CarParams.SteerControlType.torque
     ret.minSteerSpeed = 0.
-    ret.wheelSpeedFactor = 1.4
+    ret.wheelSpeedFactor = 1.3
 
     ret.pcmCruise = True     # openpilot's state is tied to the PCM's cruise state on most cars
     ret.pcmCruiseSpeed = True     # openpilot's state is tied to the PCM's cruise speed
