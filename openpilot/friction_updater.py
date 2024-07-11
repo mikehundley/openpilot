@@ -25,7 +25,7 @@ class FrictionUpdater:
         self.sm = messaging.SubMaster(['carState'])
         self.last_friction = self.get_current_friction()
         self.last_write_time = 0
-        self.WRITE_INTERVAL = 3  # Write at most every 3 seconds
+        self.WRITE_INTERVAL = 5  # Write at most every 5 seconds
 
     def get_current_friction(self):
         try:
@@ -36,24 +36,17 @@ class FrictionUpdater:
         except Exception as e:
             logging.error(f"Error reading current TorqueFriction: {e}")
             return None
-    
-    LOW_SPEED_THRESHOLD = 9.0	  # ~20 mph
-    HIGH_SPEED_THRESHOLD = 20.12  # ~45 mph
-    
-    HIGH_FRICTION = 25
-    MEDIUM_FRICTION = 18
-    LOW_FRICTION = 0
-    
+
     def update_friction(self):
         self.sm.update()
         vEgo = self.sm['carState'].vEgo
 
-        if vEgo < LOW_SPEED_THRESHOLD:           
-            return HIGH_FRICTION
-        elif LOW_SPEED_THRESHOLD <= vEgo < HIGH_SPEED_THRESHOLD: 
-            return MEDIUM_FRICTION
-        else:          
-            return LOW_FRICTION
+        if vEgo > 20.12:           # > 45 mph
+            friction = 0
+        elif 9.0 <= vEgo <= 20.11: # 20-45 mph
+            friction = 18
+        elif vEgo < 8.99:          # < 20 mph 
+            friction = 25
 
         current_time = time.time()
 
@@ -71,10 +64,10 @@ class FrictionUpdater:
         while True:
             try:
                 self.update_friction()
-                time.sleep(1.0)  # Still update every 1 seconds, but write less frequently
+                time.sleep(2.0)  # Still update every 2 seconds, but write less frequently
             except Exception as e:
                 logging.error(f"Error occurred: {e}")
-                time.sleep(5)  # Wait for 5 seconds if an error occurs before retrying
+                time.sleep(10)  # Wait for 10 seconds if an error occurs before retrying
 
 if __name__ == "__main__":
     updater = FrictionUpdater()
