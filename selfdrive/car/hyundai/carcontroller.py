@@ -1,3 +1,4 @@
+# self.params 
 from cereal import car
 import cereal.messaging as messaging
 from openpilot.common.conversions import Conversions as CV
@@ -11,6 +12,7 @@ from openpilot.selfdrive.car.hyundai.hyundaicanfd import CanBus
 from openpilot.selfdrive.car.hyundai.values import HyundaiFlags, HyundaiFlagsSP, Buttons, CarControllerParams, CANFD_CAR, CAR, CAMERA_SCC_CAR, LEGACY_SAFETY_MODE_CAR
 from openpilot.selfdrive.car.interfaces import CarControllerBase
 from openpilot.selfdrive.controls.lib.drive_helpers import HYUNDAI_V_CRUISE_MIN
+from openpilot.dp_ext.selfdrive.car.hyundai.taco_car_controller_params import TacoCarControllerParams
 
 VisualAlert = car.CarControl.HUDControl.VisualAlert
 LongCtrlState = car.CarControl.Actuators.LongControlState
@@ -50,7 +52,8 @@ class CarController(CarControllerBase):
   def __init__(self, dbc_name, CP, VM):
     self.CP = CP
     self.CAN = CanBus(CP)
-    self.params = CarControllerParams(CP)
+#   self.params = CarControllerParams(CP)
+    self.params = TacoCarControllerParams(CP)
     self.packer = CANPacker(dbc_name)
     self.angle_limit_counter = 0
     self.frame = 0
