@@ -367,7 +367,7 @@ class CarInterfaceBase(ABC):
     ret.tireStiffnessFactor = 1.0
     ret.steerControlType = car.CarParams.SteerControlType.torque
     ret.minSteerSpeed = 0.
-    ret.wheelSpeedFactor = 1.3
+    ret.wheelSpeedFactor = 1.025
 
     ret.pcmCruise = True     # openpilot's state is tied to the PCM's cruise state on most cars
     ret.pcmCruiseSpeed = True     # openpilot's state is tied to the PCM's cruise speed
@@ -398,9 +398,10 @@ class CarInterfaceBase(ABC):
 
     tune.init('torque')
     tune.torque.useSteeringAngle = use_steering_angle
-    tune.torque.kp = 1.0
-    tune.torque.kf = 1.0
-    tune.torque.ki = 0.1
+    tune.torque.kp = 0.8
+    tune.torque.kf = 1.1
+    tune.torque.ki = 0.07
+#   tune.torque.kd = 0.05
     tune.torque.friction = params['FRICTION']
     tune.torque.latAccelFactor = params['LAT_ACCEL_FACTOR']
     tune.torque.latAccelOffset = 0.0
