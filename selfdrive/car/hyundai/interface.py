@@ -82,12 +82,21 @@ class CarInterface(CarInterfaceBase):
       if 0x53E in fingerprint[2]:
         ret.spFlags |= HyundaiFlagsSP.SP_LKAS12.value
 
-    ret.steerActuatorDelay = 0.09  # Default delay
-    ret.steerLimitTimer = 0.4
-    CarInterfaceBase.configure_torque_tune(candidate, ret.lateralTuning)
+    # *** lateral control ***
+    if candidate == CAR.HYUNDAI_TUCSON_4TH_GEN:
+      ret.lateralTuning.pid.kpBP = [0., 17.5, 35.]
+      ret.lateralTuning.pid.kpV = [0.9, 0.8, 0.6]
+      ret.lateralTuning.pid.kiBP = [0., 35.]
+      ret.lateralTuning.pid.kiV = [0.09, 0.06]
+      ret.lateralTuning.pid.kf = 1.1  
+      ret.steerActuatorDelay = 0.08
+      ret.steerLimitTimer = 0.4
 
-    if candidate == CAR.KIA_OPTIMA_G4_FL:
-      ret.steerActuatorDelay = 0.2
+    else:
+      CarInterfaceBase.configure_torque_tune(candidate, ret.lateralTuning)
+
+      ret.steerActuatorDelay = 0.1  # Default delay
+      ret.steerLimitTimer = 0.4
 
     # *** longitudinal control ***
     if candidate in CANFD_CAR:
