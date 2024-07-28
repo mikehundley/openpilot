@@ -42,7 +42,7 @@ class FrictionUpdater:
         vEgo = self.sm['carState'].vEgo
 
         if vEgo > 20.12:           # > 45 mph
-            friction = 0
+            friction = 1
         elif 9.0 <= vEgo <= 20.11: # 20-45 mph
             friction = 18
         elif vEgo < 8.99:          # < 20 mph 
