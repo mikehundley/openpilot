@@ -376,7 +376,7 @@ class CarInterfaceBase(ABC):
     ret.openpilotLongitudinalControl = False
     ret.stopAccel = -2.0
     ret.stoppingDecelRate = 0.8 # brake_travel/s while trying to stop
-    ret.vEgoStopping = 0.25
+    ret.vEgoStopping = 0.2
     ret.vEgoStarting = 0.75
     ret.stoppingControl = True
     ret.longitudinalTuning.deadzoneBP = [0.]
@@ -399,7 +399,7 @@ class CarInterfaceBase(ABC):
     tune.init('torque')
     tune.torque.useSteeringAngle = use_steering_angle
     tune.torque.kp = 0.8
-    tune.torque.kf = 1.1
+    tune.torque.kf = 1.0
     tune.torque.ki = 0.07
 #   tune.torque.kd = 0.05
     tune.torque.friction = params['FRICTION']
