@@ -55,7 +55,7 @@ T_IDXS = np.array(T_IDXS_LST)
 FCW_IDXS = T_IDXS < 5.0
 T_DIFFS = np.diff(T_IDXS, prepend=[0.])
 COMFORT_BRAKE = 2.5
-STOP_DISTANCE = 6.0
+STOP_DISTANCE = 8.0
 
 def get_jerk_factor(personality=custom.LongitudinalPersonalitySP.standard):
   if personality==custom.LongitudinalPersonalitySP.relaxed:
@@ -63,9 +63,9 @@ def get_jerk_factor(personality=custom.LongitudinalPersonalitySP.standard):
   elif personality==custom.LongitudinalPersonalitySP.standard:
     return 1.0
   elif personality==custom.LongitudinalPersonalitySP.moderate:
-    return 0.5
+    return 0.8
   elif personality==custom.LongitudinalPersonalitySP.aggressive:
-    return 0.222
+    return 0.6
   else:
     raise NotImplementedError("Longitudinal personality not supported")
 
@@ -74,13 +74,33 @@ def get_T_FOLLOW(personality=custom.LongitudinalPersonalitySP.standard):
   if personality==custom.LongitudinalPersonalitySP.relaxed:
     return 1.75
   elif personality==custom.LongitudinalPersonalitySP.standard:
-    return 1.45
+    return 1.4
   elif personality==custom.LongitudinalPersonalitySP.moderate:
-    return 1.25
+    return 1.1
   elif personality==custom.LongitudinalPersonalitySP.aggressive:
-    return 1.0
+    return 0.75
   else:
     raise NotImplementedError("Longitudinal personality not supported")
+
+
+def get_dynamic_personality(v_ego, personality=custom.LongitudinalPersonalitySP.standard):
+  if personality==custom.LongitudinalPersonalitySP.relaxed:
+    x_vel =  [0,    11,   14.5, 15,   20,   20.01,  25,    25.01,  36,  36.01]
+    y_dist = [1.5,  1.5,  1.5,  1.6,  1.76, 1.76,   1.78,  1.78,   1.8, 1.8]
+  elif personality==custom.LongitudinalPersonalitySP.standard:
+    x_vel =  [0,    11,   14.5, 15,   20,   20.01,  25,    25.01,  36,  36.01]
+    y_dist = [1.20, 1.25, 1.30, 1.30, 1.35, 1.35,   1.45,  1.45,   1.50, 1.50]
+  elif personality==custom.LongitudinalPersonalitySP.moderate:
+    x_vel =  [0,    11,   14.5, 15,   20,   20.01,  25,    25.01,  36,  36.01]
+    y_dist = [1.0,  1.05,  1.10,  1.10, 1.15, 1.15,  1.20, 1.20,   1.25,  1.25]
+  elif personality==custom.LongitudinalPersonalitySP.aggressive:
+    x_vel =  [0,     5,     5.01,  11,    14.5,   15,    20,    20.01,  25, 25.01, 36,   36.01]
+    y_dist = [0.70,  0.70,  0.70,  0.75,  0.75,  0.75, 0.80, 0.80, 0.80, 0.85, 0.85,  0.90]
+  else:
+    raise NotImplementedError("Dynamic personality not supported")
+
+  return np.interp(v_ego, x_vel, y_dist)
+
 
 def get_stopped_equivalence_factor(v_lead):
   return (v_lead**2) / (2 * COMFORT_BRAKE)
@@ -338,9 +358,9 @@ class LongitudinalMpc:
     self.cruise_min_a = min_a
     self.max_a = max_a
 
-  def update(self, radarstate, v_cruise, x, v, a, j, personality=custom.LongitudinalPersonalitySP.standard):
-    t_follow = get_T_FOLLOW(personality)
+  def update(self, radarstate, v_cruise, x, v, a, j, personality=custom.LongitudinalPersonalitySP.standard, dynamic_personality=False):
     v_ego = self.x0[1]
+    t_follow = get_dynamic_personality(v_ego, personality) if dynamic_personality else get_T_FOLLOW(personality)
     self.status = radarstate.leadOne.status or radarstate.leadTwo.status
 
     lead_xv_0 = self.process_lead(radarstate.leadOne)
