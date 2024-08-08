@@ -3,7 +3,7 @@ from numbers import Number
 from openpilot.common.numpy_fast import clip, interp
 
 class PIDController:
-    def __init__(self, k_p, k_i, k_d, k_f=0., pos_limit=1e308, neg_limit=-1e308, rate=100, d_filter_time_constant=0.1):
+    def __init__(self, k_p, k_i, k_d, k_f=0., pos_limit=1e308, neg_limit=-1e308, rate=100, d_filter_time_constant=0.2):
         self._k_p = k_p
         self._k_i = k_i
         self._k_d = k_d
