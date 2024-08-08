@@ -3,12 +3,12 @@ from numbers import Number
 from openpilot.common.numpy_fast import clip, interp
 
 class PIDController:
-    def __init__(self, k_p, k_i, k_f=0., k_d=0., pos_limit=1e308, neg_limit=-1e308, rate=100):
+    def __init__(self, k_p, k_i, k_d, k_f=0., pos_limit=1e308, neg_limit=-1e308, rate=100, d_filter_time_constant=0.1):
         self._k_p = k_p
         self._k_i = k_i
         self._k_d = k_d
-        self._k_f = k_f   # feedforward gain
-        
+        self._k_f = k_f
+
         if isinstance(self._k_p, Number):
             self._k_p = [[0], [self._k_p]]
         if isinstance(self._k_i, Number):
@@ -25,6 +25,10 @@ class PIDController:
         self.i_rate = 1.0 / rate
         self.speed = 0.0
 
+        self.d_filter_time_constant = d_filter_time_constant
+        self.d_filter_alpha = d_filter_time_constant / (d_filter_time_constant + 1.0 / rate)
+        self.prev_filtered_d = 0.0
+
         self.reset()
 
     @property
@@ -38,7 +42,7 @@ class PIDController:
     @property
     def k_d(self):
         return interp(self.speed, self._k_d[0], self._k_d[1])
-    
+
     @property
     def k_f(self):
         return interp(self.speed, self._k_f[0], self._k_f[1])
@@ -59,7 +63,10 @@ class PIDController:
 
         self.p = float(error) * self.k_p
         self.f = feedforward * self.k_f
-        self.d = error_rate * self.k_d
+
+        raw_d = error_rate * self.k_d
+        self.d = self.d_filter_alpha * raw_d + (1 - self.d_filter_alpha) * self.prev_filtered_d
+        self.prev_filtered_d = self.d
 
         if override:
             self.i -= self.i_unwind_rate * float(np.sign(self.i))
