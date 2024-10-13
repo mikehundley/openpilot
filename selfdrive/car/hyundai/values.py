@@ -27,7 +27,7 @@ class CarControllerParams:
 
     if CP.carFingerprint in CANFD_CAR:
       upstream_taco = CP.safetyConfigs[-1].safetyParam & Panda.FLAG_HYUNDAI_UPSTREAM_TACO
-      self.STEER_MAX = 270 if not upstream_taco else 384 if vEgoRaw < 11. else 330
+      self.STEER_MAX = 255 if not upstream_taco else 384 if vEgoRaw < 11. else 330
       self.STEER_DRIVER_ALLOWANCE = 250 if not upstream_taco else 350
       self.STEER_DRIVER_MULTIPLIER = 2
       self.STEER_THRESHOLD = 250 if not upstream_taco else 350
@@ -43,13 +43,13 @@ class CarControllerParams:
 
     # these cars have significantly more torque than most HKG; limit to 70% of max
     elif CP.flags & HyundaiFlags.ALT_LIMITS:
-      self.STEER_MAX = 270
+      self.STEER_MAX = 255
       self.STEER_DELTA_UP = 2
       self.STEER_DELTA_DOWN = 3
 
     # Default for most HKG
     else:
-      self.STEER_MAX = 384
+      self.STEER_MAX = 255
 
 
 class HyundaiFlags(IntFlag):
@@ -342,6 +342,7 @@ class CAR(Platforms):
       HyundaiCarDocs("Hyundai Tucson Plug-in Hybrid 2024", "All", car_parts=CarParts.common([CarHarness.hyundai_n])),
     ],
     CarSpecs(mass=1630, wheelbase=2.756, steerRatio=13.7, tireStiffnessFactor=0.385),
+    flags=HyundaiFlags.HYBRID,
   )
   HYUNDAI_SANTA_CRUZ_1ST_GEN = HyundaiCanFDPlatformConfig(
     [HyundaiCarDocs("Hyundai Santa Cruz 2022-24", car_parts=CarParts.common([CarHarness.hyundai_n]))],
