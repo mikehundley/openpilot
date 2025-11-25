@@ -1,0 +1,21 @@
+[submodule "panda"]
+	path = panda
+	url = https://github.com/mikehundley/panda.git
+[submodule "opendbc_repo"]
+	path = opendbc_repo
+	url = https://github.com/mikehundley/opendbc.git
+[submodule "msgq_repo"]
+	path = msgq_repo
+	url = https://github.com/mikehundley/msgq.git
+[submodule "rednose_repo"]
+	path = rednose_repo
+	url = https://github.com/mikehundley/rednose.git
+[submodule "teleoprtc_repo"]
+	path = teleoprtc_repo
+	url = https://github.com/mikehundley/teleoprtc.git
+[submodule "tinygrad_repo"]
+	path = tinygrad_repo
+	url = https://github.com/mikehundley/tinygrad.git
+[submodule "sunnypilot/neural_network_data"]
+	path = sunnypilot/neural_network_data
+	url = https://github.com/mikehundley/neural-network-data.git
