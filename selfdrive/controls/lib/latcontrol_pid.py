@@ -1,8 +1,13 @@
 import math
+import numpy as np
 
 from cereal import log
 from openpilot.selfdrive.controls.lib.latcontrol import LatControl
+from common.numpy_fast import interp
 from openpilot.common.pid import PIDController
+
+from cereal import car
+from openpilot.selfdrive.controls.lib.get_steermax import get_steer_max
 
 
 class LatControlPID(LatControl):
@@ -10,10 +15,13 @@ class LatControlPID(LatControl):
     super().__init__(CP, CP_SP, CI)
     self.pid = PIDController((CP.lateralTuning.pid.kpBP, CP.lateralTuning.pid.kpV),
                              (CP.lateralTuning.pid.kiBP, CP.lateralTuning.pid.kiV),
-                             k_f=CP.lateralTuning.pid.kf, pos_limit=self.steer_max, neg_limit=-self.steer_max)
+                             k_f=CP.lateralTuning.pid.kf, pos_limit=1.0, neg_limit=-1.0)
     self.get_steer_feedforward = CI.get_steer_feedforward_function()
 
   def update(self, active, CS, VM, params, steer_limited_by_safety, desired_curvature, calibrated_pose, curvature_limited):
+    dynamic_max = get_steer_max(params, CS.vEgo)
+    self.pid.pos_limit = dynamic_max
+    self.pid.neg_limit = -dynamic_max
     pid_log = log.ControlsState.LateralPIDState.new_message()
     pid_log.steeringAngleDeg = float(CS.steeringAngleDeg)
     pid_log.steeringRateDeg = float(CS.steeringRateDeg)
@@ -43,6 +51,6 @@ class LatControlPID(LatControl):
       pid_log.i = float(self.pid.i)
       pid_log.f = float(self.pid.f)
       pid_log.output = float(output_torque)
-      pid_log.saturated = bool(self._check_saturation(self.steer_max - abs(output_torque) < 1e-3, CS, steer_limited_by_safety, curvature_limited))
+      pid_log.saturated = bool(self._check_saturation(dynamic_max - abs(output_torque) < 1e-3, CS, steer_limited_by_safety, curvature_limited))
 
     return output_torque, angle_steers_des, pid_log

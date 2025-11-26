@@ -20,8 +20,8 @@ from openpilot.sunnypilot.selfdrive.controls.lib.latcontrol_torque_ext import La
 # friction in the steering wheel that needs to be overcome to
 # move it at all, this is compensated for too.
 
-LOW_SPEED_X = [0, 10, 20, 30]
-LOW_SPEED_Y = [15, 13, 10, 5]
+LOW_SPEED_X = [0, 5, 10, 20, 25, 30, 40]
+LOW_SPEED_Y = [3.5, 3., 2.4, 1.5, 1.4, 1.35, 1.3]
 
 
 class LatControlTorque(LatControl):
@@ -30,8 +30,11 @@ class LatControlTorque(LatControl):
     self.torque_params = CP.lateralTuning.torque.as_builder()
     self.torque_from_lateral_accel = CI.torque_from_lateral_accel()
     self.lateral_accel_from_torque = CI.lateral_accel_from_torque()
-    self.pid = PIDController(self.torque_params.kp, self.torque_params.ki,
-                             k_f=self.torque_params.kf)
+
+    self.pid = PIDController((CP.lateralTuning.torque.kpBP, CP.lateralTuning.torque.kpV),
+                             CP.lateralTuning.torque.ki,
+                             k_f=CP.lateralTuning.torque.kf, pos_limit=self.steer_max, neg_limit=-self.steer_max)
+
     self.update_limits()
     self.steering_angle_deadzone_deg = self.torque_params.steeringAngleDeadzoneDeg
 
@@ -40,7 +43,7 @@ class LatControlTorque(LatControl):
   def update_live_torque_params(self, latAccelFactor, latAccelOffset, friction):
     self.torque_params.latAccelFactor = latAccelFactor
     self.torque_params.latAccelOffset = latAccelOffset
-    self.torque_params.friction = friction
+  #  self.torque_params.friction = friction
     self.update_limits()
 
   def update_limits(self):
