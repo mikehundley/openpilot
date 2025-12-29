@@ -1,5 +1,3 @@
-import math
-import os
 from enum import IntEnum
 from dataclasses import dataclass
 import pyray as rl
@@ -34,9 +32,6 @@ class SpeedLimitMode(IntEnum):
 class SpeedLimitRenderer(Widget):
   def __init__(self):
     super().__init__()
-    asset_path = os.path.join(os.path.dirname(__file__), "../assets")
-    self.arrow_up = self._load_tex(asset_path, "img_plus_arrow_up.png")
-    self.arrow_down = self._load_tex(asset_path, "img_minus_arrow_down.png")
 
     self.speed_limit = 0.0
     self.speed_limit_last = 0.0
@@ -58,7 +53,6 @@ class SpeedLimitRenderer(Widget):
     self.speed = 0.0
     self.set_speed = 0.0
     self.is_metric = False
-    self.road_name = ""
 
     self.font_bold = gui_app.font(FontWeight.BOLD)
     self.font_demi = gui_app.font(FontWeight.SEMI_BOLD)
@@ -67,10 +61,6 @@ class SpeedLimitRenderer(Widget):
   @property
   def speed_conv(self):
     return CV.MS_TO_KPH if self.is_metric else CV.MS_TO_MPH
-
-  def _load_tex(self, base, name):
-    path = os.path.join(base, name)
-    return rl.load_texture(path.encode()) if os.path.exists(path) else None
 
   def _update_state(self):
     sm = ui_state.sm
@@ -98,7 +88,6 @@ class SpeedLimitRenderer(Widget):
       self.speed_limit_ahead_valid = lmd.speedLimitAheadValid
       self.speed_limit_ahead = lmd.speedLimitAhead * conv
       self.speed_limit_ahead_dist = lmd.speedLimitAheadDistance
-      self.road_name = lmd.roadName
 
       if self.speed_limit_ahead_dist < self.speed_limit_ahead_dist_prev and self.speed_limit_ahead_frame < AHEAD_THRESHOLD:
         self.speed_limit_ahead_frame += 1
@@ -114,8 +103,7 @@ class SpeedLimitRenderer(Widget):
 
   def _draw_text_centered(self, font, text, size, pos_center, color):
     sz = measure_text_cached(font, text, size)
-    origin = rl.Vector2(pos_center.x - sz.x/2, pos_center.y - sz.y/2)
-    rl.draw_text_ex(font, text, origin, size, 0, color)
+    rl.draw_text_ex(font, text, rl.Vector2(pos_center.x - sz.x/2, pos_center.y - sz.y/2), size, 0, color)
 
   def _render(self, rect: rl.Rectangle):
     w, h = (200, 204) if self.is_metric else (172, 204)
@@ -126,7 +114,6 @@ class SpeedLimitRenderer(Widget):
     if self.speed_limit_assist_state == 1:
       self.assist_frame += 1
       show_sign = (self.assist_frame % UI_FREQ) >= (UI_FREQ / 2.5)
-      self._draw_pre_active_arrow(sign_rect)
     else:
       self.assist_frame = 0
       show_sign = self.speed_limit_assist_active or self.speed_limit_valid or self.speed_limit_last_valid
@@ -135,8 +122,6 @@ class SpeedLimitRenderer(Widget):
       self._draw_sign_main(sign_rect)
       if self.speed_limit_assist_state != 1:
         self._draw_ahead_info(sign_rect)
-
-    self._draw_road_name(rect)
 
   def _draw_sign_main(self, rect):
     has_limit = self.speed_limit_valid or self.speed_limit_last_valid
@@ -217,49 +202,6 @@ class SpeedLimitRenderer(Widget):
     self._draw_text_centered(self.font_demi, "AHEAD", 40, rl.Vector2(mid_x, rect.y + 24), Colors.GREY)
     self._draw_text_centered(self.font_bold, str(round(self.speed_limit_ahead)), 70, rl.Vector2(mid_x, rect.y + 75), Colors.WHITE)
     self._draw_text_centered(self.font_norm, self._format_dist(self.speed_limit_ahead_dist), 40, rl.Vector2(mid_x, rect.y + 130), Colors.GREY)
-
-  def _draw_pre_active_arrow(self, rect):
-    if not self.arrow_up or not self.arrow_down:
-      return
-
-    bounce = 20 * math.sin(self.assist_frame * (2.0 * math.pi / UI_FREQ))
-    x = rect.x + rect.width + 16
-    y = rect.y + rect.height / 2 - 45
-
-    tex = self.arrow_up if self.set_speed < self.speed_limit_final_last else self.arrow_down
-    direction = 1 if self.set_speed < self.speed_limit_final_last else -1
-    rl.draw_texture_ex(tex, rl.Vector2(x, y + (bounce * direction)), 0, 1.0, Colors.WHITE)
-
-  def _draw_road_name(self, rect: rl.Rectangle):
-    if not self.road_name:
-      return
-
-    text = self.road_name
-    text_size = measure_text_cached(self.font_demi, text, 46)
-
-    padding = 40
-    rect_width = max(200, min(text_size.x + padding, rect.width - 40))
-
-    road_rect = rl.Rectangle(
-      rect.x + rect.width / 2 - rect_width / 2,
-      rect.y - 4,
-      rect_width,
-      60
-    )
-
-    rl.draw_rectangle_rounded(road_rect, 0.2, 10, rl.Color(0, 0, 0, 120))
-
-    max_text_width = road_rect.width - 20
-    if text_size.x > max_text_width:
-      while text_size.x > max_text_width and len(text) > 3:
-        text = text[:-1]
-        text_size = measure_text_cached(self.font_demi, text + "...", 46)
-      text = text + "..."
-
-    self._draw_text_centered(self.font_demi, text, 46,
-                             rl.Vector2(road_rect.x + road_rect.width/2,
-                                        road_rect.y + road_rect.height/2),
-                             rl.Color(255, 255, 255, 200))
 
   def _format_dist(self, d):
     if self.is_metric:
