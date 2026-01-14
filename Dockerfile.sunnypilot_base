@@ -4,7 +4,7 @@ ENV PYTHONUNBUFFERED=1
 
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends sudo tzdata locales ssh pulseaudio xvfb x11-xserver-utils gnome-screenshot python3-tk python3-dev clang-17 && \
+    apt-get install -y --no-install-recommends sudo tzdata locales ssh pulseaudio xvfb x11-xserver-utils gnome-screenshot python3-tk python3-dev && \
     rm -rf /var/lib/apt/lists/*
 
 RUN sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && locale-gen
@@ -34,6 +34,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     wget \
     rsync \
   && rm -rf /var/lib/apt/lists/*
+
+# Add clang-17 and mull-17
+RUN curl -1sLf 'https://dl.cloudsmith.io/public/mull-project/mull-stable/setup.deb.sh' | bash && \
+    apt-get update && apt-get install -y clang-17 mull-17 && \
+    rm -rf /var/lib/apt/lists/*
 
 RUN mkdir -p /tmp/opencl-driver-intel && \
     cd /tmp/opencl-driver-intel && \
