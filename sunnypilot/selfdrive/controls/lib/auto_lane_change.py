@@ -6,9 +6,11 @@ See the LICENSE.md file in the root directory for more details.
 """
 from cereal import log
 
+from openpilot.common.constants import CV
 from openpilot.common.params import Params
 from openpilot.common.realtime import DT_MDL
 
+LANE_CHANGE_SPEED_MIN = 48 * CV.MPH_TO_MS
 
 class AutoLaneChangeMode:
   OFF = -1
@@ -49,6 +51,8 @@ class AutoLaneChangeController:
     self.auto_lane_change_allowed = False
     self.prev_lane_change = False
 
+    self.v_ego = 0.0
+
     self.read_params()
 
   def reset(self) -> None:
@@ -62,6 +66,7 @@ class AutoLaneChangeController:
   def read_params(self) -> None:
     self.lane_change_bsm_delay = self.params.get_bool("AutoLaneChangeBsmDelay")
     self.lane_change_set_timer = self.params.get("AutoLaneChangeTimer", return_default=True)
+    self.lane_turn_value = LANE_CHANGE_SPEED_MIN
 
   def update_params(self) -> None:
     if self.param_read_counter % 50 == 0:
@@ -81,10 +86,8 @@ class AutoLaneChangeController:
         self.lane_change_wait_timer = self.lane_change_delay + ONE_SECOND_DELAY
 
   def update_allowed(self) -> bool:
-    # Auto lane change allowed if:
-    # 1. A valid delay is set (non-zero)
-    # 2. Brake wasn't previously pressed
-    # 3. We've waited long enough
+    if self.v_ego < LANE_CHANGE_SPEED_MIN:
+      return False
 
     if self.lane_change_set_timer in (AutoLaneChangeMode.OFF, AutoLaneChangeMode.NUDGE):
       return False
@@ -97,7 +100,10 @@ class AutoLaneChangeController:
 
     return bool(self.lane_change_wait_timer > self.lane_change_delay)
 
-  def update_lane_change(self, blindspot_detected: bool, brake_pressed: bool) -> None:
+  def update_lane_change(self, blindspot_detected: bool, brake_pressed: bool, v_ego: float = None) -> None:
+    if v_ego is not None:
+      self.v_ego = float(v_ego)
+
     if brake_pressed and not self.prev_brake_pressed:
       self.prev_brake_pressed = brake_pressed
 

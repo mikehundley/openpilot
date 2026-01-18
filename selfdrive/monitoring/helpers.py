@@ -340,16 +340,17 @@ class DriverMonitoring:
 
   def _update_events(self, driver_engaged, op_engaged, standstill, wrong_gear, car_speed):
     self._reset_events()
+    self.awareness = 1.0
     # Block engaging until ignition cycle after max number or time of distractions
-    if self.terminal_alert_cnt >= self.settings._MAX_TERMINAL_ALERTS or \
-       self.terminal_time >= self.settings._MAX_TERMINAL_DURATION:
-      if not self.too_distracted:
-        self.params.put_bool_nonblocking("DriverTooDistracted", True)
-      self.too_distracted = True
+#    if self.terminal_alert_cnt >= self.settings._MAX_TERMINAL_ALERTS or \
+#       self.terminal_time >= self.settings._MAX_TERMINAL_DURATION:
+#      if not self.too_distracted:
+#        self.params.put_bool_nonblocking("DriverTooDistracted", True)
+#      self.too_distracted = True
 
     # Always-on distraction lockout is temporary
-    if self.too_distracted or (self.always_on and self.awareness <= self.threshold_prompt):
-      self.current_events.add(EventName.tooDistracted)
+#    if self.too_distracted or (self.always_on and self.awareness <= self.threshold_prompt):
+#      self.current_events.add(EventName.tooDistracted)
 
     always_on_valid = self.always_on and not wrong_gear
     if (driver_engaged and self.awareness > 0 and not self.active_monitoring_mode) or \
@@ -393,16 +394,16 @@ class DriverMonitoring:
     alert = None
     if self.awareness <= 0.:
       # terminal red alert: disengagement required
-      alert = EventName.driverDistracted if self.active_monitoring_mode else EventName.driverUnresponsive
+#      alert = EventName.driverDistracted if self.active_monitoring_mode else EventName.driverUnresponsive
       self.terminal_time += 1
       if awareness_prev > 0.:
         self.terminal_alert_cnt += 1
-    elif self.awareness <= self.threshold_prompt:
+#    elif self.awareness <= self.threshold_prompt:
       # prompt orange alert
-      alert = EventName.promptDriverDistracted if self.active_monitoring_mode else EventName.promptDriverUnresponsive
-    elif self.awareness <= self.threshold_pre and not always_on_lowspeed_exemption:
+#      alert = EventName.promptDriverDistracted if self.active_monitoring_mode else EventName.promptDriverUnresponsive
+#    elif self.awareness <= self.threshold_pre and not always_on_lowspeed_exemption:
       # pre green alert
-      alert = EventName.preDriverDistracted if self.active_monitoring_mode else EventName.preDriverUnresponsive
+#      alert = EventName.preDriverDistracted if self.active_monitoring_mode else EventName.preDriverUnresponsive
 
     if alert is not None:
       self.current_events.add(alert)

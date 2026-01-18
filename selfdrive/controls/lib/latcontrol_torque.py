@@ -22,11 +22,15 @@ from openpilot.sunnypilot.selfdrive.controls.lib.latcontrol_torque_ext import La
 # Additionally, there is friction in the steering wheel that needs
 # to be overcome to move it at all, this is compensated for too.
 
-KP = 1.0
-KI = 0.3
-KD = 0.0
-INTERP_SPEEDS = [1, 1.5, 2.0, 3.0, 5, 7.5, 10, 15, 30]
-KP_INTERP = [250, 120, 65, 30, 11.5, 5.5, 3.5, 2.0, KP]
+KP = 0.4
+KI = 0.05
+KD = 0.05
+INTERP_SPEEDS = [1, 1.5, 2.0, 3.0, 5, 7.5, 10, 15, 30, 40]
+KP_INTERP = [250, 132, 72, 33, 13., 6.5, 3.5, 1.7, 0.6, KP]
+#### NNLC Values ###
+#INTERP_SPEEDS = [1, 1.5, 2.0, 3.0, 5, 7.5, 10, 15, 30, 40]
+#KP_INTERP = [125, 60, 30, 15, 6, 2.5, 1.25, 0.98, 0.5, 0.36]
+
 
 LP_FILTER_CUTOFF_HZ = 1.2
 LAT_ACCEL_REQUEST_BUFFER_SECONDS = 1.0
