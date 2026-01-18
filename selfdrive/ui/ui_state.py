@@ -14,7 +14,7 @@ from openpilot.system.hardware import HARDWARE, PC
 
 from openpilot.selfdrive.ui.sunnypilot.ui_state import UIStateSP, DeviceSP
 
-BACKLIGHT_OFFROAD = 65 if HARDWARE.get_device_type() == "mici" else 50
+BACKLIGHT_OFFROAD = 65 if HARDWARE.get_device_type() == "mici" else 10
 
 
 class UIStatus(Enum):
@@ -253,12 +253,12 @@ class Device(DeviceSP):
       clipped_brightness = ui_state.light_sensor
 
       # CIE 1931 - https://www.photonstophotos.net/GeneralTopics/Exposure/Psychometric_Lightness_and_Gamma.htm
-      if clipped_brightness <= 8:
-        clipped_brightness = clipped_brightness / 903.3
+      if clipped_brightness <= 11:
+        clipped_brightness = (clipped_brightness / 903.3) / 1.6
       else:
         clipped_brightness = ((clipped_brightness + 16.0) / 116.0) ** 3.0
 
-      clipped_brightness = float(np.interp(clipped_brightness, [0, 1], [30, 100]))
+      clipped_brightness = float(np.interp(clipped_brightness, [0, 1], [3, 85]))
 
     brightness = round(self._brightness_filter.update(clipped_brightness))
     if not self._awake:

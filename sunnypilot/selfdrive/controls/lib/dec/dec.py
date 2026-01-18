@@ -210,8 +210,9 @@ class DynamicExperimentalController:
     self._v_cruise_kph = car_state.vCruise
     self._has_standstill = car_state.standstill
 
-    # standstill detection
-    if self._has_standstill:
+    standstill_alt = self._v_ego_kph < 24  # ~15 mph
+
+    if standstill_alt:
       self._standstill_count = min(20, self._standstill_count + 1)
     else:
       self._standstill_count = max(0, self._standstill_count - 1)
@@ -342,10 +343,11 @@ class DynamicExperimentalController:
       self._mode_manager.request_mode('blended', confidence=1.0, emergency=True)
       return
 
-    # If lead detected and not in standstill: always use ACC
+    # If lead detected and not in standstill_alt:
     if self._has_lead_filtered and not (self._standstill_count > 3):
-      self._mode_manager.request_mode('acc', confidence=1.0)
-      return
+      if self._v_ego_kph <= 61.0:
+        self._mode_manager.request_mode('acc', confidence=1.0)
+        return
 
     # Slow down scenarios: emergency for high urgency, normal for lower urgency
     if self._has_slow_down:
